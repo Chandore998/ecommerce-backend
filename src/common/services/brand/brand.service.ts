@@ -9,7 +9,7 @@ import { BrandRepository } from "src/common/repositories/brand.repository";
 @Injectable()
 export class BrandService {
   constructor(
-    @InjectRepository(BrandRepository)
+    @InjectRepository(BrasndRepository)
       private readonly brandRepository: BrandRepository,
     private readonly responseService: ResponseService
   ){}
