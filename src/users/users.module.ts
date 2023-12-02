@@ -22,5 +22,6 @@ import { ResponseService } from 'src/common/helpers/response.service';
   ],
   controllers: [UsersController],
   providers: [UsersService,UsersRepository,HelperService,ResponseService],
+  exports:[UsersService]
 })
 export class UsersModule {}

@@ -1,38 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from 'src/common/repositories/users.repository';
-import { CreateUserDto } from 'src/common/dto/auth/createUserDto';
+import { CreateUserDto } from 'src/common/dto/auth/createUser.dto';
 import { HelperService } from 'src/common/helpers/helper.service';
 import { Response } from 'express';
-import { LoginUserDto } from 'src/common/dto/auth/loginUserDto';
+import { LoginUserDto } from 'src/common/dto/auth/loginUser.dto';
 import { ResponseService } from 'src/common/helpers/response.service';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly usersRepository : UsersRepository,
+    @InjectRepository(UsersRepository)
+        private readonly usersRepository: UsersRepository,
     private readonly helperService : HelperService,
     private readonly responseService : ResponseService
   ){}
 
   async createUser( createUserDto: CreateUserDto , res : Response) {
     const userRecord = await this.usersRepository.findOneByEmail(createUserDto.email)
-    if(!userRecord){
-      return
+    if(userRecord){
+      return this.responseService.responseBadRequestWithOutData(res,"Email already exists")
     }
     const password = createUserDto && createUserDto?.password
     const encryptPassword = await this.helperService.passwordGenerator(password)
     createUserDto.password = encryptPassword
-    const userDetail =  await this.usersRepository.create(createUserDto);
+    const userDetail =  await this.usersRepository.createUser(createUserDto);
     if(userDetail){
-      const accessToken =  await this.helperService.generateToken({ id : userDetail.id })
+      const accessToken =  await this.helperService.generateToken({ id : userDetail.id , role : 1 })
       delete userDetail.password
       const responseData = {
         ...userDetail , accessToken
       }
-      res.status(200).send({ responseData });
+      this.responseService.responseOk(res ,responseData,"User created successfully" )
       return;
     }
-    res.status(400).send({message : "Something went wrong"})
+    this.responseService.responseBadRequestWithOutData(res ,"Something went wrong" )
     return;
   }
 
@@ -64,15 +66,8 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
-  findOne(id:string) {
-    return  "tjos";
+  async findUser(id:string){
+    return this.usersRepository.findOneById(id)
   }
 
-  update(id: number, updateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }

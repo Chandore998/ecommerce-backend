@@ -1,7 +1,6 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-const typeOrmPostgresConfig: DataSourceOptions = {
+export const typeOrmPostgresConfig: DataSourceOptions = {
   type: 'postgres',
   host: "localhost" , // Use environment variable or fallback to 'localhost'
   port: 5432, // Use environment variable or fallback to 5432
@@ -11,6 +10,6 @@ const typeOrmPostgresConfig: DataSourceOptions = {
   entities: [ __dirname + '/**/*.entity{.ts,.js}'], // Provide the path to your entity files
   migrations: [ __dirname + '/migrations/*{.ts,.js}'], // Provide the path to your migration files
   synchronize: false, // Set to true for development, but false for production
-  logging: true, // Enable logging (optional, for debugging purposes)
+  logging: false, // Enable logging (optional, for debugging purposes)
 };
 export const DatabaseSource = new DataSource(typeOrmPostgresConfig);

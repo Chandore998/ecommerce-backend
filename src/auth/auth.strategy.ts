@@ -1,12 +1,16 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from 'src/common/services/users/users.service';
 
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy,"auth"){
-    constructor(private configService: ConfigService){
+    constructor(
+        private configService: ConfigService,
+        private usersService : UsersService
+        ){
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -16,7 +20,14 @@ export class JwtStrategy extends PassportStrategy(Strategy,"auth"){
     }
 
     async validate(payload: any) {
-        console.log(payload,"get data of payload")
-        return
+
+        if(payload){
+             const user = await this.usersService.findUser(payload.id)
+             if(user){
+                delete user.password
+                return { ...payload , ...user}
+             }
+             throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); 
+        }
       }
 }

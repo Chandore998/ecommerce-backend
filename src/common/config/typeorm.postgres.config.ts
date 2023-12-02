@@ -1,4 +1,3 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { DataSourceOptions,DataSource } from 'typeorm';
 
@@ -21,12 +20,14 @@ export const getDatabaseDataSourceOptions = (configService: ConfigService): Data
 
 
   export const typeOrmConfigFactory = (configService: ConfigService): DataSourceOptions => {
-    return {
+     const data = {
       ...getDatabaseDataSourceOptions(configService),
       synchronize: false,
-      entities: ['dist/**/*.entity.{ts,js}'],
+      entities: [ __dirname + '/**/*.entity{.ts,.js}'],
       migrations: ['dist/src/migrations/*.{ts,js}'],
     };
+    return data 
+
   };
 
   export const DatabaseSource = new DataSource({

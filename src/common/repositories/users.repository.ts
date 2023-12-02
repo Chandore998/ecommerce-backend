@@ -1,27 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Users } from 'src/entities/user.entity';
-import { CreateUserDto } from 'src/common/dto/auth/createUserDto';
+import { CreateUserDto } from 'src/common/dto/auth/createUser.dto';
 
 @Injectable()
-export class UsersRepository {
-  constructor(
-    @InjectRepository(Users) private userRepository :Repository<Users>
-  ){}
+export class UsersRepository  extends Repository<Users> {
+  constructor(private dataSource: DataSource) {
+    super(Users, dataSource.createEntityManager());
+  }
 
-
-  async create(createUserDto:CreateUserDto) {
-    const createdUser = this.userRepository.create(createUserDto);
-    return await this.userRepository.save(createdUser) 
+  async createUser(createUserDto:CreateUserDto) {
+    const createdUser = this.create(createUserDto);
+    return await this.save(createdUser) 
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.find();
   }
 
   async findOneByEmail(email: string) {
-    return await this.userRepository.findOne({ where : { email }})
+    return await this.findOne({ where : { email }})
+  }
+
+  async findOneById(id: string) {
+    return await this.findOne({ where : { id }})
   }
 
 }

@@ -1,31 +1,36 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Brand } from "src/entities/brand.entity";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
+import { UpdateBrandDto } from "../dto/brand/updateBrand.dto";
 
 @Injectable()
-export class BrandRepository {
-    constructor(
-        @InjectRepository(Brand) private brandRepository :Repository<Brand>
-    ){}
+export class BrandRepository  extends Repository<Brand> {
+    constructor(private dataSource: DataSource) {
+        super(Brand, dataSource.createEntityManager());
+      }
 
-    async create(createBrandInput){
-         const brand =  this.brandRepository.create(createBrandInput)
-         return await this.brandRepository.save(brand);
+
+    async createBrand(createBrandInput){
+         return await this.save(createBrandInput);
     }
 
-    async update(updateBrandInput){
-         return await this.brandRepository.save(updateBrandInput);
+    async updateBrand(brandId: string,updateBrandInput: UpdateBrandDto){
+         return await this.update({ id : brandId }, updateBrandInput);
+    }
+ 
+    async findOneById(id : string){
+         return await this.findOne({ where : { id }})
     }
 
-    async findOne(id : string){
-         return await this.brandRepository.findOne({ where : { id }})
+    async findOneByName(name : string){
+        return await this.findOne({ where : { name }})
     }
     
-    async findAll(id : string){
-        return await this.brandRepository.find()
+    async findAll(){
+        return await this.find()
     }
-    async remove(brandDetail){
-        return await this.brandRepository.remove(brandDetail)
+    
+    async removeBrand(brandDetail){
+        return await this.remove(brandDetail)
     }
 }

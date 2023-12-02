@@ -1,14 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete , Req , Res} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete , Req , Res, ValidationPipe} from '@nestjs/common';
 import { UsersService } from '../common/services/users/users.service';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/common/dto/auth/createUserDto';
+import { CreateUserDto } from 'src/common/dto/auth/createUser.dto';
 import { Response } from 'express';
-import { LoginUserDto } from 'src/common/dto/auth/loginUserDto';
+import { LoginUserDto } from 'src/common/dto/auth/loginUser.dto';
+import { HelperService } from 'src/common/helpers/helper.service';
+import { ResponseService } from 'src/common/helpers/response.service';
 
 @ApiTags('auth')
 @Controller('api')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly responseService : ResponseService
+    ) {}
 
   @Post("sign_up")
   @ApiBody({ type : CreateUserDto ,required : true })
@@ -17,10 +22,9 @@ export class UsersController {
   @ApiResponse({ status: 500, description: 'Internal Server error' })
   async signup(@Body() createUserDto : CreateUserDto , @Res() res : Response) {
     try{
-      return this.usersService.createUser(createUserDto , res);
+      return await this.usersService.createUser(createUserDto , res);
     }catch(error){
-      res.send(500).send({ message : "Internal Server error"})
-      return;
+      return this.responseService.responseIntervalServer(res)
     }
   }
 
@@ -33,8 +37,7 @@ export class UsersController {
     try{
       return this.usersService.getloginUser(loginUserDto , res);
     }catch(error){
-      res.send(500).send({ message : "Internal Server error"})
-      return;
+      return this.responseService.responseIntervalServer(res);
     }
   }
 }
