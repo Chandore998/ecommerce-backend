@@ -36,7 +36,7 @@ export class BrandController {
 
 
 
-            
+
            return await this.brandService.createBrand(res,createBrandDto)
         }catch(error){
             return this.responseService.responseIntervalServer(res)
@@ -73,6 +73,10 @@ export class BrandController {
         try {
            return await this.brandService.findAllBrands(res)
         }
+
+
+
+        
         catch(error){
             return this.responseService.responseIntervalServer(res)
         }
