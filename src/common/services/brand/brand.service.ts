@@ -9,7 +9,7 @@ import { BrandRepository } from "src/common/repositories/brand.repository";
 @Injectable()
 export class BrandService {
   constructor(
-    @InjectRepository(BrasndRepository)
+    @InjectRepository(BrandRepository)
       private readonly brandRepository: BrandRepository,
     private readonly responseService: ResponseService
   ){}
@@ -21,6 +21,8 @@ export class BrandService {
         this.responseService.responseNotAcceptable(res ,"Brand Already Exist")
         return 
     }
+    
+    console.log('do')
     const brandDetail = await this.brandRepository.createBrand(createBrandInput)
     return this.responseService.responseCreated(res, brandDetail , "Brand add successfully")
   }

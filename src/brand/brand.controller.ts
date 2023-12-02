@@ -29,8 +29,14 @@ export class BrandController {
     async createBrand(
         @Body() createBrandDto : CreateBrandDto,
         @Res() res : Response
+
     ){
         try{
+
+
+
+
+            
            return await this.brandService.createBrand(res,createBrandDto)
         }catch(error){
             return this.responseService.responseIntervalServer(res)
