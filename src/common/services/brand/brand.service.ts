@@ -21,10 +21,13 @@ export class BrandService {
         this.responseService.responseNotAcceptable(res ,"Brand Already Exist")
         return 
     }
-    
+
     console.log('do')
     const brandDetail = await this.brandRepository.createBrand(createBrandInput)
     return this.responseService.responseCreated(res, brandDetail , "Brand add successfully")
+
+
+    
   }
 
   async updateBrand(res:Response, brandId: string , updateBrandDto: UpdateBrandDto){
